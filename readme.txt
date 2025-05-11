@@ -1,3 +1,5 @@
+#### Dùng python 3.12
+
 1. Cài đặt Docker:
     Tải và cài đặt: https://www.docker.com/products/docker-desktop/
 
