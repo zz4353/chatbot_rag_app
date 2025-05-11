@@ -23,7 +23,9 @@ Chạy đoạn này:
 
 
 
-Run
+4. Run
+    docker start elasticsearch
+
     Terminal 1:
         flask create-index
         flask run --port=3001
