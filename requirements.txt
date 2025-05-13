@@ -240,7 +240,7 @@ multidict==6.4.3
     #   yarl
 mypy-extensions==1.1.0
     # via typing-inspect
-numpy==2.2.5
+numpy
     # via
     #   elasticsearch
     #   langchain-aws
@@ -415,7 +415,7 @@ safetensors==0.5.3
     # via transformers
 sentry-sdk==2.26.1
     # via langtrace-python-sdk
-shapely==2.1.0
+shapely
     # via google-cloud-aiplatform
 simsimd==6.2.1
     # via elasticsearch
@@ -538,3 +538,5 @@ opentelemetry-instrumentation-system-metrics==0.52b1
 opentelemetry-instrumentation-tortoiseorm==0.52b1
 opentelemetry-instrumentation-urllib3==0.52b1
 elastic-opentelemetry-instrumentation-openai
+beautifulsoup4
+pypdf

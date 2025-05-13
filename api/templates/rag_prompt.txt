@@ -28,4 +28,5 @@ Chat history:
 {% endfor -%}
 
 Question: {{ question }}
+
 Response:

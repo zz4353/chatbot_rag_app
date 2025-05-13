@@ -1,0 +1,28 @@
+You are evaluating whether a retrieved document is relevant to a user's question.
+
+Here is the retrieved document:
+{% for doc in docs -%}
+---
+{{ doc.page_content }}
+---
+{% endfor -%}
+
+Here is the chat history:
+{% for dialogue_turn in chat_history -%}
+{% if dialogue_turn.type == 'human' %}Question: {{ dialogue_turn.content }}{% elif dialogue_turn.type == 'ai' %}Response: {{ dialogue_turn.content }}{% endif %}
+{% endfor -%}
+
+User's question: {{ question }}                 
+
+Mark the document as relevant if either it or the chat history helps answer the question. 
+You don't need to be too strict—if the document provides partial but useful information, that's enough to mark it as relevant.
+
+Respond with one of the following:
+- **"yes"**: Relevant (enough to answer the question)
+- **"no"**: Not relevant (cannot answer the question)
+- **"ambiguous"**: Possibly related but not enough to answer
+
+Output your answer in JSON format only:
+"answer": "yes"  
+"answer": "no"  
+"answer": "ambiguous"
