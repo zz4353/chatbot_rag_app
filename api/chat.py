@@ -1,5 +1,7 @@
 import json
 import os
+from grade_documents import document_relevant, YES, NO, AMBIGUOUS
+from web_search import web_search
 
 from elasticsearch_client import (
     elasticsearch_client,
@@ -60,6 +62,20 @@ def ask_question(question, session_id):
     current_app.logger.debug("Question: %s", question)
 
     docs = store.as_retriever().invoke(condensed_question)
+    
+    is_relevant = document_relevant(question=question, docs=docs, chat_history=chat_history.messages)
+
+
+    if is_relevant == YES:
+        yield f"data: <b>Using internal data</b> <br><br>\n\n"
+    elif is_relevant == NO:
+        docs = web_search(condensed_question)
+        yield f"data: <b>Searching online</b> <br><br>\n\n"
+    else:
+        docs.extend(web_search(condensed_question))
+        yield f"data: <b>Using internal data & online search</b> <br><br>\n\n"
+
+
     for doc in docs:
         doc_source = {**doc.metadata, "page_content": doc.page_content}
         current_app.logger.debug(

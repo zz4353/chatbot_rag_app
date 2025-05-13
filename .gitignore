@@ -5,3 +5,4 @@ api/__pycache__
 venv
 .DS_Store
 .env
+data/__pycache__
