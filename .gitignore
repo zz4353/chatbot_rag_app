@@ -6,4 +6,5 @@ venv
 .DS_Store
 .env
 data/__pycache__
+data/data_json
 chatbot_env

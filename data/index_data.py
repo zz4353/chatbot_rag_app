@@ -4,6 +4,7 @@ from sys import stdout
 import time
 from halo import Halo
 from warnings import warn
+import glob
 
 from elasticsearch import (
     ApiError,
@@ -20,20 +21,22 @@ from langchain_elasticsearch import ElasticsearchStore
 # Global variables
 # Modify these if you want to use a different file, index or model
 INDEX = os.getenv("ES_INDEX", "workplace-app-docs")
-FILE = os.getenv("FILE", f"{os.path.dirname(__file__)}/data.json")
+# FILE = os.getenv("FILE", f"{os.path.dirname(__file__)}/data.json")
 ELASTICSEARCH_URL = os.getenv("ELASTICSEARCH_URL")
 ELASTICSEARCH_USER = os.getenv("ELASTICSEARCH_USER")
 ELASTICSEARCH_PASSWORD = os.getenv("ELASTICSEARCH_PASSWORD")
 ELASTICSEARCH_API_KEY = os.getenv("ELASTICSEARCH_API_KEY")
 ELSER_MODEL = os.getenv("ELSER_MODEL", ".elser_model_2")
+FOLDER_JSON = f"{os.path.dirname(__file__)}/data_json/"
 
 if ELASTICSEARCH_USER:
     es = Elasticsearch(
         hosts=[ELASTICSEARCH_URL],
         basic_auth=(ELASTICSEARCH_USER, ELASTICSEARCH_PASSWORD),
+        request_timeout=120
     )
 elif ELASTICSEARCH_API_KEY:
-    es = Elasticsearch(hosts=[ELASTICSEARCH_URL], api_key=ELASTICSEARCH_API_KEY)
+    es = Elasticsearch(hosts=[ELASTICSEARCH_URL], api_key=ELASTICSEARCH_API_KEY, request_timeout=120)
 else:
     raise ValueError(
         "Please provide either ELASTICSEARCH_USER or ELASTICSEARCH_API_KEY"
@@ -85,23 +88,32 @@ def is_elser_fully_allocated():
 def main():
     install_elser()
 
-    print(f"Loading data from ${FILE}")
+    print(f"Loading data from ${FOLDER_JSON}")
 
     metadata_keys = ["name", "summary", "url", "category", "updated_at"]
     workplace_docs = []
-    with open(FILE, "rt") as f:
-        for doc in json.loads(f.read()):
-            workplace_docs.append(
-                Document(
-                    page_content=doc["content"],
-                    metadata={k: doc.get(k) for k in metadata_keys},
-                )
+    for file_json in glob.glob(FOLDER_JSON+"*.json"):
+        with open(file_json, 'r', encoding="utf-8") as f:
+            dict_data = json.load(f)
+        workplace_docs.append(
+            Document(
+                page_content=dict_data["content"],
+                metadata={k:dict_data.get(k) for k in metadata_keys}
             )
+        )
+    # with open(FILE, "rt") as f:
+    #     for doc in json.loads(f.read()):
+    #         workplace_docs.append(
+    #             Document(
+    #                 page_content=doc["content"],
+    #                 metadata={k: doc.get(k) for k in metadata_keys},
+    #             )
+    #         )
 
     print(f"Loaded {len(workplace_docs)} documents")
 
     text_splitter = RecursiveCharacterTextSplitter.from_tiktoken_encoder(
-        chunk_size=512, chunk_overlap=256
+        chunk_size=512, chunk_overlap=126
     )
 
     docs = text_splitter.transform_documents(workplace_docs)
@@ -131,7 +143,15 @@ def main():
 
     try:
         es.indices.delete(index=INDEX, ignore_unavailable=True)
-        store.add_documents(list(docs))
+        list_doc = list(docs)
+        process_per_add = len(list_doc)//400
+        for i in range(400):
+            try:
+                store.add_documents(list_doc[i*process_per_add:(i+1)*process_per_add])
+                print(f"done{i+1}")
+            except:
+                continue
+        
     except BadRequestError:
         # This error means the index already exists
         pass
@@ -141,7 +161,14 @@ def main():
         warn(f"Error occurred, will retry after ML jobs complete: {e}")
         await_ml_tasks()
         es.indices.delete(index=INDEX, ignore_unavailable=True)
-        store.add_documents(list(docs))
+        list_doc = list(docs)
+        process_per_add = len(list_doc)//400
+        for i in range(400):
+            try:
+                store.add_documents(list_doc[i*process_per_add:(i+1)*process_per_add])
+                print(f"done{i+1}")
+            except:
+                continue
 
     if stdout.isatty():
         spinner.stop()
