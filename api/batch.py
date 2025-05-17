@@ -1,4 +1,3 @@
-import json
 import os
 from grade_documents import document_relevant, YES, NO, AMBIGUOUS
 from web_search import web_search
@@ -56,7 +55,6 @@ def ask_question(question):
         "rag_batch_prompt.txt",
         question=question,
         docs=docs,
-        chat_history=[],
     )
 
     answer = ""
@@ -82,9 +80,10 @@ if __name__ == "__main__":
     save_path = os.path.join(os.path.dirname(__file__), "..", "data", "answers.txt")
 
     with app.app_context():
-
         for question in questions:
             answer = ask_question(question)
+            answer = answer.replace('\n', ' ')
+            
             save_answer_to_file(save_path, question, answer)
             print("-" * 50)
             print(f"Question: {question}")

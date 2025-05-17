@@ -19,10 +19,6 @@ PASSAGE:
 
 {% endfor -%}
 ----
-Chat history:
-{% for dialogue_turn in chat_history -%}
-{% if dialogue_turn.type == 'human' %}Question: {{ dialogue_turn.content }}{% elif dialogue_turn.type == 'ai' %}Response: {{ dialogue_turn.content }}{% endif %}
-{% endfor -%}
 
 Question: {{ question }}
 
