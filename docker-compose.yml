@@ -1,0 +1,15 @@
+version: '3'
+services:
+  webapp:
+    build: .
+    ports:
+      - "3001:3001"
+    environment:
+      - ELASTICSEARCH_URL=${ELASTICSEARCH_URL}
+      - ELASTICSEARCH_USER=${ELASTICSEARCH_USER}
+      - ELASTICSEARCH_PASSWORD=${ELASTICSEARCH_PASSWORD}
+      - TAVILY_API_KEY=${TAVILY_API_KEY}
+      - LLM_TYPE=ollama
+      - OLLAMA_BASE_URL=http://host.docker.internal:11434
+    extra_hosts:
+      - "host.docker.internal:host-gateway"

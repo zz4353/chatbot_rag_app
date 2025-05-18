@@ -6,7 +6,7 @@ from langchain_google_vertexai import ChatVertexAI
 from langchain_mistralai import ChatMistralAI
 from langchain_openai import AzureChatOpenAI, ChatOpenAI
 
-LLM_TYPE = os.getenv("LLM_TYPE", "openai")
+LLM_TYPE = os.getenv("LLM_TYPE", "ollama")
 
 
 def init_openai_chat(temperature):
