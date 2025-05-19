@@ -27,9 +27,9 @@ class ChatOllama:
             stream=True
         )
         response.raise_for_status()
-        for line in response.iter_lines():
+        for line in response.iter_lines(decode_unicode=True):
             if line:
-                data = json.loads(line.decode('utf-8'))
+                data = json.loads(line)
                 chunk = data.get("response", "")
                 if chunk:
                     yield OllamaResponse(chunk)
@@ -41,6 +41,5 @@ if __name__ == "__main__":
 
     answer = ""
     for i in ollama.stream(question):
-        print(i)
-        answer += i
+        answer += i.content
     print("Final Answer:", answer)
