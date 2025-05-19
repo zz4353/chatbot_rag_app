@@ -5,6 +5,7 @@ from langchain_cohere import ChatCohere
 from langchain_google_vertexai import ChatVertexAI
 from langchain_mistralai import ChatMistralAI
 from langchain_openai import AzureChatOpenAI, ChatOpenAI
+from llm_ollama import ChatOllama
 
 LLM_TYPE = os.getenv("LLM_TYPE", "openai")
 
@@ -61,6 +62,13 @@ def init_cohere_chat(temperature):
     CohereInstrumentation().instrument()
     return ChatCohere(model=os.getenv("CHAT_MODEL"), temperature=temperature)
 
+def init_ollama_chat(temperature):
+    return ChatOllama(
+        model=os.getenv("CHAT_MODEL"),
+        streaming=True,
+        temperature=temperature,
+    )
+
 
 MAP_LLM_TYPE_TO_CHAT_MODEL = {
     "azure": init_azure_chat,
@@ -69,6 +77,7 @@ MAP_LLM_TYPE_TO_CHAT_MODEL = {
     "vertex": init_vertex_chat,
     "mistral": init_mistral_chat,
     "cohere": init_cohere_chat,
+    "ollama": init_ollama_chat,
 }
 
 
