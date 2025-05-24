@@ -5,7 +5,7 @@ from langchain_cohere import ChatCohere
 from langchain_google_vertexai import ChatVertexAI
 from langchain_mistralai import ChatMistralAI
 from langchain_openai import AzureChatOpenAI, ChatOpenAI
-from langchain_ollama import OllamaLLM  # Assuming langchain-ollama is installed
+from llm_ollama import OllamaResponse  # Assuming langchain-ollama is installed
 
 LLM_TYPE = os.getenv("LLM_TYPE", "ollama")
 OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
@@ -69,7 +69,7 @@ def init_ollama_chat(temperature):
     # Note: OllamaLLM might not use temperature in the same way or at all via its constructor.
     # Refer to LangChain documentation for specific OllamaLLM parameters.
     # For basic use, model and base_url are key.
-    return OllamaLLM(
+    return OllamaResponse(
         model=OLLAMA_MODEL,
         base_url=OLLAMA_BASE_URL,
         temperature=temperature,  # Pass temperature if supported, otherwise it might be ignored or handled differently
