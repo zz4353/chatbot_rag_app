@@ -92,14 +92,24 @@ def ask_question(question, session_id):
 
     answer = ""
     for chunk in llm.stream(qa_prompt):
-        content = chunk.content.replace(
-            "\n", " "
-        )  # the stream can get messed up with newlines
-        yield f"data: {content}\n\n"
-        answer += chunk.content
+        current_chunk_content = ""
+        if hasattr(chunk, 'content'):
+            current_chunk_content = chunk.content
+        elif isinstance(chunk, str):
+            current_chunk_content = chunk
+        else:
+            # Fallback for unexpected chunk type, log this if it happens
+            current_app.logger.warning(f"Unexpected chunk type in qa_prompt stream: {type(chunk)}")
+            current_chunk_content = str(chunk)
+
+        # Replace newlines in the content intended for display/SSE
+        display_content = current_chunk_content.replace("\n", " ")
+        yield f"data: {display_content}\n\n"
+        
+        # Append the original chunk content (with newlines) to the full answer
+        answer += current_chunk_content
 
     yield f"data: {DONE_TAG}\n\n"
-    current_app.logger.debug("Answer: %s", answer)
 
     chat_history.add_user_message(question)
     chat_history.add_ai_message(answer)
