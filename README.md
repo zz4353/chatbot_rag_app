@@ -100,11 +100,3 @@ If you are running the application using `docker-compose up --build`:
         - yarn start
 
 - The app will be available at https://localhost:3001
-
-## Docker
-```sh
-docker build -f Dockerfile -t chatbot-rag-app .
-docker run --rm --env-file .env chatbot-rag-app flask create-index
-docker run --rm -p 4000:4000 --env-file .env -d chatbot-rag-app
-```
-- The app will be available at: http://localhost:4000/
