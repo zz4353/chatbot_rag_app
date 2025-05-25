@@ -1,30 +1,29 @@
-FROM python:3.10
-
-# Set working directory
+FROM node:22-alpine AS build-step
 WORKDIR /app
+ENV PATH=/node_modules/.bin:$PATH
+COPY frontend ./frontend
+RUN cd frontend && yarn install
+RUN cd frontend && REACT_APP_API_HOST=/api yarn build
 
-# Install Node.js for frontend building
-RUN apt-get update && apt-get install -y nodejs npm
+# Use glibc-based image to get pre-compiled wheels for grpcio and tiktoken
+FROM python:3.12-slim
 
-# Copy requirements first for better caching
-COPY requirements.txt .
-RUN pip install -r requirements.txt
-
-# Copy application files
-COPY . .
-
-# Build frontend - Add --legacy-peer-deps flag
-WORKDIR /app/frontend
-RUN npm install --legacy-peer-deps
-RUN npm run build
 WORKDIR /app
+RUN mkdir -p ./frontend/build
+COPY --from=build-step ./app/frontend/build ./frontend/build
 
-# Expose the port Flask will run on
-EXPOSE 3001
+COPY requirements.txt ./requirements.txt
+RUN pip3 install -r ./requirements.txt
 
-# Set environment variables
-ENV FLASK_APP=api/app.py
-ENV LLM_TYPE=ollama 
+RUN mkdir -p ./api ./data
+COPY api ./api
+COPY data ./data
 
-# Start Flask app
-CMD ["flask", "run", "--host=0.0.0.0", "--port=3001"]
+EXPOSE 4000
+
+# Default to disabling instrumentation, can be overridden to false in
+# docker invocations to reenable.
+ENV OTEL_SDK_DISABLED=true
+ENTRYPOINT [ "opentelemetry-instrument" ]
+
+CMD [ "python", "api/app.py" ]

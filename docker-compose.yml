@@ -1,15 +1,35 @@
-version: '3'
+name: chatbot-rag-app
+
 services:
-  webapp:
-    build: .
+  create-index:
+    image: ghcr.io/elastic/elasticsearch-labs/chatbot-rag-app
+    build:
+      context: .
+    container_name: create-index
+    restart: 'no'  # no need to re-ingest on successive runs
+    env_file:
+      - .env
+    command: flask create-index
+    volumes:
+      # VertexAI uses a file for GOOGLE_APPLICATION_CREDENTIALS, not an API key
+      - ${HOME}/.config/gcloud:/root/.config/gcloud
+    extra_hosts:  # send localhost traffic to the docker host, e.g. your laptop
+        - "localhost:host-gateway"
+
+  api-frontend:
+    depends_on:
+      create-index:
+        condition: service_completed_successfully
+    container_name: api-frontend
+    image: ghcr.io/elastic/elasticsearch-labs/chatbot-rag-app
+    build:
+      context: .
+    env_file:
+      - .env
+    volumes:
+      # VertexAI uses a file for GOOGLE_APPLICATION_CREDENTIALS, not an API key
+      - ${HOME}/.config/gcloud:/root/.config/gcloud
     ports:
-      - "3001:3001"
-    environment:
-      - ELASTICSEARCH_URL=${ELASTICSEARCH_URL}
-      - ELASTICSEARCH_USER=${ELASTICSEARCH_USER}
-      - ELASTICSEARCH_PASSWORD=${ELASTICSEARCH_PASSWORD}
-      - TAVILY_API_KEY=${TAVILY_API_KEY}
-      - LLM_TYPE=ollama
-      - OLLAMA_BASE_URL=http://host.docker.internal:11434
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
+      - "4000:4000"
+    extra_hosts:  # send localhost traffic to the docker host, e.g. your laptop
+        - "localhost:host-gateway"
