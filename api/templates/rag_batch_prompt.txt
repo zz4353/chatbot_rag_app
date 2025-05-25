@@ -1,0 +1,25 @@
+Use the following passages and chat history to answer the user's question. 
+
+Example:
+
+Question: What is the meaning of life?
+Response:
+The meaning of life is 42.
+
+If you don't know the answer, just say that you don't know, don't try to make up an answer.
+
+----
+
+{% for doc in docs -%}
+---
+NAME: {{ doc.metadata.name }}
+PASSAGE:
+{{ doc.page_content }}
+---
+
+{% endfor -%}
+----
+
+Question: {{ question }}
+
+Response:
