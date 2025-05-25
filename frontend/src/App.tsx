@@ -47,11 +47,11 @@ const App = () => {
   }
 
   const suggestedQueries = [
-    'Đại học Quốc gia Hà Nội viết tắt trong Tiếng Anh là gì?',
-    'Địa chỉ của Đại học Quốc gia Hà Nội ở đâu?',
-    'Đại học Quốc gia Hà Nội công khai cam kết chất lượng đào tạo như thế nào?',
     'Nói về tổng quan của Đại học Quốc gia Hà Nội.',
-    'Các bài hát truyền thống của Đại học Quốc gia Hà Nội là những bài nào?',
+    "Hãy giới thiệu chung về công tác đào tạo của Đại học Quốc gia Hà Nội.",
+    'Trường Đại học Công Nghệ đào tạo những chuyên ngành nào?',
+    'Khu vực Hòa Lạc có những cơ sở nào của Đại học Quốc gia Hà Nội?',
+    'Dự thảo chiến lược phát triển KH&CN của ĐHQGHN 2021-2030 nói về điều gì?',
   ]
 
   return (
