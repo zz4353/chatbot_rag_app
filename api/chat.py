@@ -61,7 +61,7 @@ def ask_question(question, session_id):
     current_app.logger.debug("Condensed question: %s", condensed_question)
     current_app.logger.debug("Question: %s", question)
 
-    docs = store.as_retriever().invoke(condensed_question)
+    docs = store.as_retriever(search_kwargs={"k": 5}).invoke(condensed_question)
     
     is_relevant = document_relevant(question=question, docs=docs, chat_history=chat_history.messages)
 
