@@ -47,11 +47,11 @@ const App = () => {
   }
 
   const suggestedQueries = [
-    'What is our work from home policy?',
-    "What's the NASA sales team?",
-    'Does the company own my side project?',
-    'What job openings do we have?',
-    'How does compensation work?',
+    'Nói về tổng quan của Đại học Quốc gia Hà Nội.',
+    "Hãy giới thiệu chung về công tác đào tạo của Đại học Quốc gia Hà Nội.",
+    'Trường Đại học Công Nghệ đào tạo những chuyên ngành nào?',
+    'Khu vực Hòa Lạc có những cơ sở nào của Đại học Quốc gia Hà Nội?',
+    'Dự thảo chiến lược phát triển KH&CN của ĐHQGHN 2021-2030 nói về điều gì?',
   ]
 
   return (
